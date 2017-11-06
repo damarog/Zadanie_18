@@ -8,72 +8,73 @@ import UserForm from './UserForm';
 
 const socket = io('/');
 
-class App extends React.Component {
-  	constructor(props) {
-	    super(props);
-	    this.state = {users: [], messages: [], text: '', name: ''};
-  	}
+class App extends Component {
+    constructor(props) {
+        super(props);
+        this.state = { users: [], messages: [], text: '', name: ''};
+    }
 
-  	render() {
-    	return this.state.name !== '' ? this.renderLayout() : this.renderUserForm();
-  	}
+    componentDidMount() {
+        socket.on('message', message => this.messageRecive(message));
+        socket.on('update', ({users}) => this.chatUpdate(users));
+    }
 
-  	renderLayout() {
-	    return (
-		      <div className={styles.App}>
-		        <div className={styles.AppHeader}>
-		          <div className={styles.AppTitle}>
-		            ChatApp
-		          </div>
-		          <div className={styles.AppRoom}>
-		            App room
-		          </div>
-		        </div>
-		        <div className={styles.AppBody}>
-		          <UsersList
-		            users={this.state.users} client={this.state.name}
-		          />
-		          <div className={styles.MessageWrapper}>
-		            <MessageList
-		              messages={this.state.messages} client={this.state.name}
-		            />
-		            <MessageForm
-		              onMessageSubmit={message => this.handleMessageSubmit(message)}
-		              name={this.state.name}
-		            />
-		          </div>
-		        </div>
-		      </div>
-		   	);
-	}
-  	renderUserForm() {
-   		return (<UserForm onUserSubmit={name => this.handleUserSubmit(name)} />)
-	}
+    messageRecive(message) {
+        const messages = [message, ...this.state.messages];
+        this.setState({messages});
+    }
 
-	componentDidMount() {
-		socket.on('message', message => this.messageReceive(message));
-		socket.on('update', ({users}) => this.chatUpdate(users));
-	}
+    chatUpdate(users) {
+        this.setState({users});
+    }
 
-	messageReceive(message) {
-	  	const messages = [message, ...this.state.messages];
-	  	this.setState({messages});
-	}
+    handleMessageSubmit(message) {
+        const messages = [message, ...this.state.messages];
+        this.setState({ messages });
+        socket.emit('message', message);
+    }
 
-	chatUpdate(users) {
-	  	this.setState({users});
-	}
+    handleUserSubmit(name) {        
+        this.setState({name});
+        socket.emit('join', name);
+    }
 
-	handleMessageSubmit(message) {
-		const messages = [message, ...this.state.messages];
-		this.setState({messages});
-		socket.emit('message', message);
-	}
+    render() {
+        return this.state.name !== '' ? this.renderLayout() : this.renderUserForm();
+    }
 
-	handleUserSubmit(name) {
-  		this.setState({name});
-  		socket.emit('join', name);
-	}
+    renderLayout() {
+        return (
+            <div className={styles.App}>
+                <div className={styles.AppHeader}>
+                    <div className={styles.AppTitle}>
+                        ChatApp
+                    </div>            
+                    <div className={styles.AppRoom}>
+                        App room
+                    </div>
+                </div>
+                <div className={styles.AppBody}>
+                    <UsersList
+                        users={this.state.users}
+                    />
+                    <div className={styles.MessageWrapper}>
+                        <MessageList
+                            messages={this.state.messages}
+                        />
+                        <MessageForm
+                            onMessageSubmit={message => this.handleMessageSubmit(message)}
+                            name={this.state.name}
+                        />
+                    </div>
+                </div>
+            </div>
+        );
+    } 
+
+    renderUserForm() {
+        return (<UserForm onUserSubmit={name => this.handleUserSubmit(name)} />)
+    }
 };
 
 export default App;

@@ -1,60 +1,61 @@
+const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
-const webpack = require('webpack');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const OptimizeJsPlugin = require('optimize-js-plugin');
 
 var env = process.env.NODE_ENV || 'development';
-
 var plugins = [
-        new HtmlWebpackPlugin({
-                template: 'client/index.html',
-                filename: 'index.html',
-                inject: 'body',
-            })
+    new HtmlWebpackPlugin({
+        template: 'client/index.html',
+        filename: 'index.html',
+        inject: 'body',
+    })
 ];
-
+ 
 console.log('NODE_ENV:', env);
 
 if (env === 'production') {
     plugins.push(
         new webpack.optimize.UglifyJsPlugin(),
         new OptimizeJsPlugin({
-        sourceMap: false
+            sourceMap: false
         })
     );
 }
 
 module.exports = {
-    entry: [
-        //'react-hot-loader/patch',
+    entry: [//'react-hot-loader/patch',
         'webpack-dev-server/client?http://localhost:8080',
         //'webpack/hot/only-dev-server',
-        './client/index.js'
-    ],
+        './client/index.js'],
     output: {
         path: path.resolve(__dirname, 'public'),
-        filename: 'bundle.js'
+        filename: 'bundle.js'        
     },
     module: {
         rules: [
             {
                 test: /\.js$/,
-                loader: "babel-loader"
+                loader: 'babel-loader'
+                // options: {
+                //     presets: ['es2015']
+                // }
             },
             {
                 test: /\.css$/,
                 use: [
-                    { loader: 'style-loader'},
+                    { loader: 'style-loader' },
                     {
                         loader: 'css-loader',
                         options: {
-                            modules: true
+                            module: true
                         }
                     }
                 ]
             }
-        ]
+        ]        
     },
     plugins: plugins
 };
+

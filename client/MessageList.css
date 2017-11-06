@@ -3,41 +3,6 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    width: 100%;
-    height: 590px;
+    width: 75vw;
     padding: 20px;
-    background-color: white;
-    overflow: auto;
-}
-
-.Message {
-	background-color: #EEFDA5;
-	text-align: left;
-  margin: 5px 2px;
-}
-
-.Message>p, .MessageClient>p {
-  margin: 1px;
-}
-
-.Message>span, .MessageClient>span {
-  font-size: .7em;
-  font-style: italic;
-  word-wrap: break-word;
-}
-
-.MessageClient {
-	background-color: #B8FBFB;
-	text-align: right;
-}
-
-.Message, .MessageClient {
-	padding: 5px;
-	color: black;
-	border-radius: 5px;
-}
-
-.ClientName {
-	font-size: .5em;
-	text-decoration: underline;
 }
